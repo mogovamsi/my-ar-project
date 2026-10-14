@@ -1,52 +1,60 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>My Classroom WebAR</title>
-    <!-- Load A-Frame 3D library -->
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <!-- Load AR.js library -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Classroom WebAR</title>
+    <!-- Stable A-Frame library -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <!-- Stable AR.js library -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   </head>
   <body style="margin: 0px; overflow: hidden;">
 
-    <a-scene vr-mode-ui="enabled: false;" embedded arjs>
-      <!-- Preload Local Audio Asset -->
+    <a-scene 
+      embedded 
+      vr-mode-ui="enabled: false;" 
+      xr-mode-ui="enabled: false;"
+      arjs="sourceType: webcam; debugUIEnabled: false;">
+
+      <!-- Preload Media Assets -->
       <a-assets>
-        <!-- Reference your uploaded file directly by name -->
+        <!-- 1. Audio Asset -->
         <audio id="my-sound" src="hiro.mp3" preload="auto"></audio>
+        
+        <!-- 2. 3D Model Asset (Upload dinosaur.glb to your GitHub repository) -->
+        <a-asset-item id="my-model" src="chicken.glb"></a-asset-item>
       </a-assets>
 
       <!-- Target Marker (Hiro) -->
       <a-marker preset="hiro" id="marker">
         
-        <!-- 3D Red Box with Spinning Animation -->
-        <a-box 
-          position="0 0.5 0" 
-          color="red" 
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 3000">
-        </a-box>
+        <!-- Render 3D Model -->
+        <a-gltf-model 
+          src="#my-model" 
+          position="0 0 0" 
+          scale="0.5 0.5 0.5" 
+          rotation="0 0 0">
+        </a-gltf-model>
 
-        <!-- Sound Entity Connected to Asset -->
-        <a-entity sound="src: #hiro; autoplay: false"></a-entity>
+        <!-- Sound Entity -->
+        <a-entity sound="src: #my-sound; autoplay: false"></a-entity>
 
       </a-marker>
 
-      <!-- Camera Entity -->
+      <!-- Camera -->
       <a-entity camera></a-entity>
     </a-scene>
 
-    <!-- Script to Trigger Audio when Marker is Visible -->
+    <!-- Audio Control Script -->
     <script>
       window.addEventListener('load', () => {
         const marker = document.querySelector('#marker');
         const sound = document.querySelector('a-entity[sound]');
 
-        // Play sound when Hiro marker appears in camera
         marker.addEventListener('markerFound', () => {
           sound.components.sound.playSound();
         });
 
-        // Pause sound when Hiro marker leaves camera
         marker.addEventListener('markerLost', () => {
           sound.components.sound.pauseSound();
         });
